@@ -4,20 +4,13 @@ import {
   EncounterEvent,
   EncounterOption,
   EncounterOptionEffect,
+  EncounterResolution,
   GameSession,
   PendingEncounterContext,
   Transaction,
 } from '../domain/types.js';
 import { ConfigService } from './ConfigService.js';
 import { SessionService } from './SessionService.js';
-
-export interface EncounterResolution {
-  eventId: string;
-  option: EncounterOption;
-  transactions: Transaction[];
-  modifiersApplied: ActiveModifier[];
-  freeTicketsGranted: number;
-}
 
 const buildOptionKey = (eventId: string, optionId: string): string =>
   `${eventId}:${optionId}`;
