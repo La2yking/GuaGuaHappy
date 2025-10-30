@@ -18,6 +18,7 @@ This repository contains the implementation plan and configuration assets for a 
 - **Backend service (Node.js + Fastify):** Located under `src/`. Provides session management, ticket purchases, encounter resolution, and prize roll logic following the product specification.
 - **Configuration loader:** Validates YAML/JSON configs against a zod schema and exposes typed access to ticket definitions and encounter events.
 - **Domain services:** In-memory session store, encounter engine, and prize distribution utilities implementing RTP and modifier handling.
+- **Web game client:** Served from `/` and implemented as a lightweight vanilla JavaScript page that consumes the backend APIs for session management, ticket purchases, and encounter resolution.
 
 See `config/default-config.yaml` for the sample runtime configuration powering the default service bootstrapping.
 
@@ -51,6 +52,8 @@ CONFIG_PATH=./config/my-playtest.yaml npm run dev
 ## Gameplay Quickstart (API Walkthrough)
 
 Once the server is running, interact with the game through the REST API. The examples below use `curl`, but any HTTP client (Postman, Insomnia, Thunder Client, etc.) works.
+
+> Tip: Prefer a visual walkthrough? Open http://localhost:3000/ in a browser to use the built-in game page that exercises the endpoints below.
 
 1. **Check server health**
    ```bash

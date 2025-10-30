@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 
+import { gamePageHtml } from './gamePageHtml.js';
 import { mapEncounterContextToView, mapEncounterResolutionToView, mapSessionToView, mapTicketToView } from './viewModels.js';
 import { ConfigService } from '../services/ConfigService.js';
 import { SessionService } from '../services/SessionService.js';
@@ -31,6 +32,10 @@ export const registerRoutes = (
   app: FastifyInstance,
   deps: RouteDependencies,
 ): void => {
+  app.get('/', async (_, reply) => {
+    reply.type('text/html; charset=utf-8').send(gamePageHtml);
+  });
+
   app.get('/health', async () => ({
     status: 'ok',
     uptime: process.uptime(),
