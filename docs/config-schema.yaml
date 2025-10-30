@@ -1,0 +1,270 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: ScratchLotteryGameConfiguration
+description: >-
+  Schema describing configurable elements for the scratch lottery game. Can be consumed by
+  admin tooling, AI-assisted code generators, or validation pipelines.
+type: object
+required:
+  - ticketTypes
+  - game
+properties:
+  ticketTypes:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required:
+        - id
+        - name
+        - faceValue
+        - rtpTarget
+        - maxPrize
+        - prizeTiers
+      properties:
+        id:
+          type: string
+          description: Unique identifier used by APIs and database records.
+        name:
+          type: object
+          description: Multi-language display names keyed by locale (e.g., zh-CN, en-US).
+          additionalProperties:
+            type: string
+        faceValue:
+          type: number
+          minimum: 0
+          description: Ticket purchase price in in-game currency.
+        rtpTarget:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Target return-to-player (0.6-0.8 recommended).
+        maxPrize:
+          type: number
+          minimum: 0
+          description: Highest possible prize for this ticket type.
+        ticketLimit:
+          type: integer
+          minimum: 0
+          description: Maximum number of ticket instances offered concurrently (optional UI hint).
+        mediaRefs:
+          type: object
+          description: Asset references for display and audio resources.
+          properties:
+            cover:
+              type: string
+              format: uri
+            scratchMask:
+              type: string
+              format: uri
+            revealAnimation:
+              type: string
+              format: uri
+            audioWin:
+              type: string
+              format: uri
+            audioLose:
+              type: string
+              format: uri
+          additionalProperties:
+            type: string
+        description:
+          type: string
+          description: Player-facing description and rules.
+        localeOverrides:
+          type: object
+          description: Optional locale-specific overrides for prize tiers or descriptions.
+          additionalProperties:
+            type: object
+        prizeTiers:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - label
+              - amount
+            properties:
+              label:
+                type: string
+                description: Prize tier label shown to players (supports i18n tokens).
+              amount:
+                type: number
+                minimum: 0
+                description: Prize payout amount for this tier.
+              share:
+                type: number
+                minimum: 0
+                maximum: 1
+                description: Proportion of total prize pool budget allocated to this tier.
+              weight:
+                type: number
+                minimum: 0
+                description: Probability weight if using runtime RNG instead of pre-generated pools.
+              count:
+                type: integer
+                minimum: 0
+                description: Exact number of wins in a pre-generated pool.
+              metadata:
+                type: object
+                additionalProperties: true
+  encounterEvents:
+    type: array
+    description: Optional list of pre-purchase events offering modifiers.
+    items:
+      type: object
+      required:
+        - id
+        - name
+        - triggerChance
+        - options
+      properties:
+        id:
+          type: string
+          description: Unique event identifier.
+        name:
+          type: string
+          description: Display title for the encounter.
+        triggerChance:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Probability of triggering prior to ticket purchase.
+        maxPerSession:
+          type: integer
+          minimum: 0
+          description: Maximum times this event can appear in a single session.
+        category:
+          type: string
+          enum:
+            - price_mod
+            - rtp_mod
+            - free_ticket
+            - risk_reward
+            - bonus
+            - penalty
+            - narrative
+            - other
+        narrative:
+          type: object
+          description: Multi-language narrative content.
+          additionalProperties:
+            type: string
+        options:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - id
+              - label
+              - effect
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              effect:
+                type: object
+                description: Structured modifier payload consumed by backend.
+                properties:
+                  priceMultiplier:
+                    type: number
+                    minimum: 0
+                  priceOffset:
+                    type: number
+                  rtpMultiplier:
+                    type: number
+                    minimum: 0
+                  bonusProbability:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                  freeTickets:
+                    type: integer
+                    minimum: 0
+                  nextTicketTypeOverride:
+                    type: string
+                  modifierDuration:
+                    type: integer
+                    minimum: 0
+                    description: Number of upcoming purchases the effect applies to.
+                  balanceBonus:
+                    type: number
+                  balancePenalty:
+                    type: number
+                  cooldownPurchases:
+                    type: integer
+                    minimum: 0
+                  metadata:
+                    type: object
+                    additionalProperties: true
+                additionalProperties: true
+              riskDescription:
+                type: string
+                description: Required disclosure of downside.
+              cooldown:
+                type: integer
+                minimum: 0
+                description: Purchases before option can reappear.
+              telemetryTags:
+                type: array
+                items:
+                  type: string
+        metadata:
+          type: object
+          additionalProperties: true
+  game:
+    type: object
+    required:
+      - initialBalance
+      - targetBalance
+    properties:
+      initialBalance:
+        type: number
+        minimum: 0
+        description: Starting balance for new sessions.
+      targetBalance:
+        type: number
+        minimum: 0
+        description: Balance required to win a session.
+      minPurchaseIntervalMs:
+        type: integer
+        minimum: 0
+        description: Cooldown to mitigate rapid-fire purchases.
+      maxSessionsPerDay:
+        type: integer
+        minimum: 0
+        description: Optional limit to encourage responsible play.
+      leaderboardSize:
+        type: integer
+        minimum: 0
+      locale:
+        type: string
+        default: zh-CN
+      analytics:
+        type: object
+        properties:
+          provider:
+            type: string
+          stream:
+            type: string
+          customDimensions:
+            type: array
+            items:
+              type: string
+      antiCheat:
+        type: object
+        properties:
+          purchaseVelocityThreshold:
+            type: integer
+          winRateStdDevLimit:
+            type: number
+          scratchCoverageThreshold:
+            type: number
+            minimum: 0
+            maximum: 1
+          flaggingActions:
+            type: array
+            items:
+              type: string
+additionalProperties: false
