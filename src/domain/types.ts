@@ -155,6 +155,14 @@ export interface ActiveModifier {
   appliedAt: string;
 }
 
+export interface EncounterResolution {
+  eventId: string;
+  option: EncounterOption;
+  transactions: Transaction[];
+  modifiersApplied: ActiveModifier[];
+  freeTicketsGranted: number;
+}
+
 export interface SessionEncounterTracker {
   counts: Record<string, number>;
   optionCooldowns: Record<string, number>;
