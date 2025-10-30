@@ -1,0 +1,167 @@
+ticketTypes:
+  - id: lucky-10
+    name:
+      en-US: "Lucky ¥10"
+      zh-CN: "幸运10元"
+    faceValue: 10
+    rtpTarget: 0.7
+    maxPrize: 10000
+    description: "刮开任意三个相同金额即可中奖"
+    prizeTiers:
+      - label: "特等奖"
+        amount: 10000
+        share: 0.05
+      - label: "二等奖"
+        amount: 1000
+        share: 0.1
+      - label: "三等奖"
+        amount: 100
+        share: 0.2
+      - label: "安慰奖"
+        amount: 20
+        share: 0.15
+    mediaRefs:
+      cover: "https://cdn.example.com/tickets/lucky10/cover.png"
+      scratchMask: "https://cdn.example.com/tickets/lucky10/mask.png"
+      audioWin: "https://cdn.example.com/audio/win-tier2.mp3"
+  - id: neon-5
+    name:
+      en-US: "Neon Nights"
+      zh-CN: "霓虹之夜"
+    faceValue: 5
+    rtpTarget: 0.68
+    maxPrize: 2000
+    description: "刮出任意霓虹图标组合即可获奖"
+    prizeTiers:
+      - label: "Neon Jackpot"
+        amount: 2000
+        share: 0.03
+      - label: "City Lights"
+        amount: 250
+        share: 0.08
+      - label: "Glow Reward"
+        amount: 40
+        share: 0.2
+      - label: "Ambient Bonus"
+        amount: 10
+        share: 0.25
+    mediaRefs:
+      cover: "https://cdn.example.com/tickets/neon5/cover.png"
+      scratchMask: "https://cdn.example.com/tickets/neon5/mask.png"
+      audioWin: "https://cdn.example.com/audio/neon-win.mp3"
+encounterEvents:
+  - id: double-priced-bonus
+    name: "双倍价格换超大回报"
+    triggerChance: 0.15
+    maxPerSession: 2
+    category: risk_reward
+    narrative:
+      zh-CN: "商家提出加倍购票换取更好的中奖机会。"
+      en-US: "Vendor offers a double-price upgrade with juiced odds."
+    options:
+      - id: accept
+        label: "接受挑战"
+        effect:
+          priceMultiplier: 2
+          rtpMultiplier: 1.5
+          modifierDuration: 1
+        riskDescription: "未中奖将扣除双倍金额"
+        cooldown: 3
+      - id: decline
+        label: "保守前进"
+        effect:
+          priceMultiplier: 1
+        riskDescription: "维持当前票价，没有额外收益"
+  - id: lucky-windfall
+    name: "幸运之风"
+    triggerChance: 0.12
+    maxPerSession: 1
+    category: bonus
+    narrative:
+      zh-CN: "一阵幸运之风吹来，带来额外的金币。"
+      en-US: "A gust of luck grants a chance at bonus coins."
+    options:
+      - id: embrace
+        label: "拥抱好运"
+        effect:
+          balanceBonus: 150
+          rtpMultiplier: 1.1
+          modifierDuration: 2
+        riskDescription: "幸运并非总能降临，同样可能带来新的挑战"
+      - id: pass
+        label: "保持冷静"
+        effect:
+          priceMultiplier: 1
+        riskDescription: "放弃额外奖励，风险最小"
+  - id: freebie-surprise
+    name: "免费惊喜"
+    triggerChance: 0.1
+    maxPerSession: 2
+    category: free_ticket
+    narrative:
+      zh-CN: "摊主赠送神秘刮刮卡一张。"
+      en-US: "The stall owner gifts you a mysterious scratch card."
+    options:
+      - id: accept
+        label: "收下惊喜"
+        effect:
+          freeTickets: 1
+          modifierDuration: 1
+        riskDescription: "免费礼物可能暗藏机关"
+      - id: decline
+        label: "谢绝好意"
+        effect:
+          priceMultiplier: 1
+        riskDescription: "继续按照节奏前进"
+  - id: price-cut
+    name: "限时减价"
+    triggerChance: 0.2
+    maxPerSession: 2
+    category: price_mod
+    narrative:
+      zh-CN: "限时折扣，购票半价。"
+      en-US: "Limited time discount halves the ticket price."
+    options:
+      - id: grab-deal
+        label: "抢下折扣"
+        effect:
+          priceMultiplier: 0.5
+          modifierDuration: 1
+        riskDescription: "折扣有限，抓住机会"
+      - id: skip
+        label: "跳过"
+        effect:
+          priceMultiplier: 1
+        riskDescription: "错过折扣，维持原价"
+      - id: extend
+        label: "延长折扣"
+        effect:
+          priceMultiplier: 0.5
+          modifierDuration: 3
+          balancePenalty: 50
+        riskDescription: "延长折扣需支付手续费"
+        cooldown: 4
+      
+  # additional events can be appended here
+  
+  
+game:
+  initialBalance: 1000
+  targetBalance: 5000
+  minPurchaseIntervalMs: 1500
+  maxSessionsPerDay: 10
+  leaderboardSize: 100
+  locale: zh-CN
+  analytics:
+    provider: "datadog"
+    stream: "scratch-lottery-events"
+    customDimensions:
+      - "sessionId"
+      - "ticketType"
+  antiCheat:
+    purchaseVelocityThreshold: 3
+    winRateStdDevLimit: 3
+    scratchCoverageThreshold: 0.7
+    flaggingActions:
+      - "review"
+      - "suspend"
